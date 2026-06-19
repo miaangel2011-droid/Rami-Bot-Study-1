@@ -425,7 +425,7 @@ async function callGemini() {
   // Keep last 10 turns
   const contents = G.hist.slice(-10);
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${G.key}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${G.key}`;
 
   try {
     const res = await fetch(url, {

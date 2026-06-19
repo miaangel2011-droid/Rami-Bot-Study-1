@@ -320,7 +320,7 @@ window.onload = () => {
 function startApp() {
   const k = document.getElementById('apiKeyInput').value.trim();
   const n = document.getElementById('nameInput').value.trim();
-  if (!k.startsWith('AIza')) { toast('❌ Clé invalide — commence par AIza…','err'); return; }
+  if (k.length < 10) { toast('❌ Clé invalide','err'); return; }
   G.key = k; G.name = n;
   localStorage.setItem('sb_key', k);
   localStorage.setItem('sb_name', n);

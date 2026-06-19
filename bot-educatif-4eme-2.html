@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyBot 4ème ✨</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap');
+  :root{--violet:#7C3AED;--violet-light:#A78BFA;--rose:#EC4899;--cyan:#06B6D4;--vert:#10B981;--orange:#F59E0B;--bg:#0F0A1E;--card:#1A1130;--card2:#221843;--text:#F1F0FF;--muted:#9CA3AF;--border:#3B2D6A}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+  /* SETUP */
+  .setup-screen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
+  .setup-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:32px 24px;max-width:420px;width:100%;text-align:center}
+  .setup-logo{font-size:3rem;margin-bottom:10px}
+  .setup-title{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,var(--violet-light),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+  .setup-sub{color:var(--muted);font-size:0.86rem;margin-bottom:22px;line-height:1.5}
+  .setup-label{font-size:0.73rem;font-weight:800;color:var(--violet-light);text-transform:uppercase;letter-spacing:.08em;text-align:left;margin-bottom:7px;display:block}
+  .setup-input{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.9rem;outline:none;transition:border-color .2s;margin-bottom:14px}
+  .setup-input:focus{border-color:var(--violet)}
+  .setup-input::placeholder{color:var(--muted)}
+  .setup-btn{width:100%;background:linear-gradient(135deg,var(--violet),var(--rose));border:none;border-radius:12px;padding:14px;color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s}
+  .setup-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,58,237,.4)}
+  .setup-steps{background:var(--card2);border-radius:14px;padding:16px;margin-bottom:18px;text-align:left}
+  .setup-steps p{font-size:0.82rem;line-height:1.8;color:var(--text)}
+  .setup-steps a{color:var(--violet-light);font-weight:700;text-decoration:none}
+  .setup-hint{font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.4}
+
+  /* HEADER */
+  .header{background:linear-gradient(135deg,#1A0A3C,var(--bg));border-bottom:1px solid var(--border);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+  .logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;background:linear-gradient(135deg,var(--violet-light),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .header-right{display:flex;gap:8px;align-items:center}
+  .header-badge{background:linear-gradient(135deg,var(--violet),var(--rose));padding:4px 10px;border-radius:20px;font-size:0.68rem;font-weight:700}
+  .dot-green{width:8px;height:8px;border-radius:50%;background:var(--vert);box-shadow:0 0 6px var(--vert)}
+  .reset-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif}
+  .reset-btn:hover{border-color:var(--rose);color:var(--rose)}
+
+  /* NAV */
+  .nav-subjects{display:flex;gap:8px;padding:11px 14px;overflow-x:auto;scrollbar-width:none;background:var(--card);border-bottom:1px solid var(--border)}
+  .nav-subjects::-webkit-scrollbar{display:none}
+  .subject-btn{flex-shrink:0;padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .subject-btn:hover{border-color:var(--violet-light);color:var(--violet-light)}
+  .subject-btn.active{background:linear-gradient(135deg,var(--violet),var(--rose));border-color:transparent;color:#fff;box-shadow:0 0 12px rgba(124,58,237,.4)}
+
+  /* MAIN */
+  .main{max-width:700px;margin:0 auto;padding:16px 14px 100px}
+
+  /* STATS */
+  .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center}
+  .stat-value{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--violet-light),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .stat-label{font-size:0.67rem;color:var(--muted);font-weight:700;margin-top:2px}
+
+  /* PROGRESS */
+  .progress-section{margin-bottom:16px;display:none}
+  .section-label{font-size:0.72rem;font-weight:800;color:var(--violet-light);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+  .prog-wrap{background:var(--card2);border-radius:10px;height:8px;overflow:hidden;margin-top:5px}
+  .prog-fill{height:100%;background:linear-gradient(90deg,var(--violet),var(--rose));border-radius:10px;transition:width .5s ease;width:0%}
+
+  /* UPLOAD */
+  .upload-zone{border:2px dashed var(--border);border-radius:16px;padding:20px 16px;text-align:center;cursor:pointer;transition:all .3s;background:var(--card);margin-bottom:14px}
+  .upload-zone:hover,.upload-zone.drag{border-color:var(--violet);background:rgba(124,58,237,.07);box-shadow:0 0 16px rgba(124,58,237,.14)}
+  .upload-icon{font-size:1.9rem;margin-bottom:7px}
+  .upload-title{font-size:0.93rem;font-weight:800;margin-bottom:3px}
+  .upload-sub{font-size:0.75rem;color:var(--muted);margin-bottom:11px}
+  .upload-btn{background:linear-gradient(135deg,var(--violet),var(--violet-light));color:#fff;border:none;padding:8px 18px;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.82rem;cursor:pointer}
+  #fileInput{display:none}
+  .previews{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+  .prev-item{position:relative;width:68px;height:68px}
+  .prev-item img{width:100%;height:100%;object-fit:cover;border-radius:9px;border:2px solid var(--violet)}
+  .prev-rm{position:absolute;top:-5px;right:-5px;width:17px;height:17px;background:var(--rose);border:none;border-radius:50%;color:#fff;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:900}
+  .clear-btn{display:none;margin-top:7px;padding:4px 11px;border-radius:10px;border:1px solid var(--rose);background:transparent;color:var(--rose);font-family:'Nunito',sans-serif;font-size:0.73rem;font-weight:700;cursor:pointer}
+
+  /* MODES */
+  .mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:15px}
+  .mode-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:12px;cursor:pointer;transition:all .2s;text-align:center}
+  .mode-card:hover{border-color:var(--violet-light)}
+  .mode-card.sel{border-color:var(--violet);background:rgba(124,58,237,.12);box-shadow:0 0 13px rgba(124,58,237,.2)}
+  .mode-icon{font-size:1.45rem;margin-bottom:4px}
+  .mode-name{font-size:0.82rem;font-weight:800;margin-bottom:2px}
+  .mode-desc{font-size:0.68rem;color:var(--muted)}
+
+  /* CHAT */
+  .chat-section{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+  .chat-header{background:linear-gradient(135deg,var(--violet),#5B21B6);padding:12px 15px;display:flex;align-items:center;gap:10px}
+  .bot-av{width:33px;height:33px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+  .bot-name{font-weight:800;font-size:0.9rem}
+  .bot-status{font-size:0.68rem;opacity:.8}
+  .stag{margin-left:auto;background:rgba(255,255,255,.18);padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:700;white-space:nowrap}
+  .chat-msgs{height:400px;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:11px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+
+  /* MESSAGES */
+  .msg{display:flex;gap:8px;align-items:flex-start;animation:fi .3s ease}
+  @keyframes fi{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+  .msg.user{flex-direction:row-reverse}
+  .mav{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.82rem;flex-shrink:0}
+  .msg.bot .mav{background:linear-gradient(135deg,var(--violet),var(--rose))}
+  .msg.user .mav{background:linear-gradient(135deg,var(--cyan),var(--vert))}
+  .mbub{max-width:78%;padding:10px 13px;border-radius:14px;font-size:0.85rem;line-height:1.55}
+  .msg.bot .mbub{background:var(--card2);border:1px solid var(--border);border-top-left-radius:4px}
+  .msg.user .mbub{background:linear-gradient(135deg,var(--violet),var(--rose));border-top-right-radius:4px}
+  .msg-img{max-width:170px;border-radius:9px;border:2px solid var(--violet);margin-top:4px;display:block}
+
+  /* TYPING */
+  .typing-ind{display:flex;gap:4px;padding:10px 13px;background:var(--card2);border:1px solid var(--border);border-radius:14px;width:fit-content;border-top-left-radius:4px}
+  .tdot{width:6px;height:6px;border-radius:50%;background:var(--violet-light);animation:tp 1.2s infinite}
+  .tdot:nth-child(2){animation-delay:.2s}.tdot:nth-child(3){animation-delay:.4s}
+  @keyframes tp{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+
+  /* QCM */
+  .qcm-block{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px;width:100%;animation:fi .3s ease}
+  .qnum{background:linear-gradient(135deg,var(--violet),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:0.73rem;font-weight:900;display:block;margin-bottom:3px}
+  .qqst{font-weight:800;font-size:0.87rem;margin-bottom:11px;line-height:1.4}
+  .qopts{display:flex;flex-direction:column;gap:6px}
+  .qopt{padding:8px 11px;border:1.5px solid var(--border);border-radius:10px;background:transparent;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;text-align:left;transition:all .2s;display:flex;align-items:center;gap:8px}
+  .qopt:hover:not(:disabled){border-color:var(--violet-light);background:rgba(124,58,237,.1)}
+  .qopt.ok{border-color:var(--vert);background:rgba(16,185,129,.15);color:#6EE7B7}
+  .qopt.ko{border-color:var(--rose);background:rgba(236,72,153,.12);color:#FBCFE8}
+  .qopt.rev{border-color:var(--vert);background:rgba(16,185,129,.07);opacity:.7}
+  .qopt:disabled{cursor:default}
+  .oltr{width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:900;flex-shrink:0}
+  .qopt.ok .oltr{background:var(--vert);color:#fff}.qopt.ko .oltr{background:var(--rose);color:#fff}
+  .qfb{margin-top:10px;padding:8px 12px;border-radius:9px;font-size:0.8rem;font-weight:700;line-height:1.4;display:none}
+  .qfb.ok{background:rgba(16,185,129,.15);border:1px solid var(--vert);color:#6EE7B7}
+  .qfb.ko{background:rgba(236,72,153,.12);border:1px solid var(--rose);color:#FBCFE8}
+
+  /* FLASHCARD */
+  .fc{background:var(--card2);border:1.5px solid var(--border);border-radius:16px;padding:20px;cursor:pointer;transition:all .3s;animation:fi .3s ease;text-align:center;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+  .fc:hover{border-color:var(--violet-light)}
+  .fc.flipped{border-color:var(--vert);background:rgba(16,185,129,.08)}
+  .fc-side{font-size:0.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .fc-cnt{font-size:0.93rem;font-weight:700;line-height:1.4}
+  .fc-hint{font-size:0.7rem;color:var(--muted)}
+
+  /* INPUT */
+  .chat-input-area{padding:11px 13px;border-top:1px solid var(--border);background:var(--card)}
+  .quick-actions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .qbtn{padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-size:0.71rem;font-weight:700;cursor:pointer;transition:all .2s}
+  .qbtn:hover{border-color:var(--violet-light);color:var(--violet-light);background:rgba(124,58,237,.08)}
+  .irow{display:flex;gap:8px;align-items:flex-end}
+  .cinput{flex:1;background:var(--card2);border:1.5px solid var(--border);border-radius:13px;padding:10px 13px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.85rem;resize:none;outline:none;transition:border-color .2s;max-height:100px;min-height:42px}
+  .cinput:focus{border-color:var(--violet)}
+  .cinput::placeholder{color:var(--muted)}
+  .sbtn{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--violet),var(--rose));border:none;color:#fff;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+  .sbtn:hover{transform:scale(1.06);box-shadow:0 4px 13px rgba(124,58,237,.4)}
+  .sbtn:disabled{opacity:.35;transform:none}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:75px;left:50%;transform:translateX(-50%) translateY(18px);background:var(--card2);border:1px solid var(--border);padding:8px 18px;border-radius:20px;font-size:0.82rem;font-weight:700;opacity:0;transition:all .3s;z-index:300;white-space:nowrap;max-width:92vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.err{border-color:var(--rose);color:#FBCFE8}
+  .toast.ok{border-color:var(--vert);color:#6EE7B7}
+
+  @media(min-width:600px){.mode-grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- ====== SETUP ====== -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-card">
+    <div class="setup-logo">📚</div>
+    <div class="setup-title">StudyBot 4ème</div>
+    <p class="setup-sub">Ton assistant IA gratuit pour réviser toutes les matières !</p>
+
+    <div class="setup-steps">
+      <p>
+        1️⃣ Va sur <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a><br>
+        2️⃣ Clique sur <strong>"Create API Key"</strong><br>
+        3️⃣ Copie la clé et colle-la ci-dessous<br>
+        ✅ C'est <strong>100% gratuit</strong> (1500 req/jour)
+      </p>
+    </div>
+
+    <label class="setup-label">🔑 Clé API Google Gemini</label>
+    <input type="password" class="setup-input" id="apiKeyInput" placeholder="AIza..." autocomplete="off">
+
+    <label class="setup-label">👤 Prénom (facultatif)</label>
+    <input type="text" class="setup-input" id="nameInput" placeholder="ex : Léa" maxlength="20">
+
+    <button class="setup-btn" onclick="startApp()">🚀 Commencer à réviser !</button>
+    <p class="setup-hint">Ta clé est sauvegardée uniquement sur cet appareil 🔒</p>
+  </div>
+</div>
+
+<!-- ====== APP ====== -->
+<div id="app" style="display:none">
+
+<div class="header">
+  <div class="logo">📚 StudyBot 4ème</div>
+  <div class="header-right">
+    <div class="dot-green"></div>
+    <div class="header-badge">✨ Gemini</div>
+    <button class="reset-btn" onclick="resetApp()">🔑 Clé</button>
+  </div>
+</div>
+
+<div class="nav-subjects">
+  <button class="subject-btn active" onclick="setSub(this,'Général','🌟')">🌟 Général</button>
+  <button class="subject-btn" onclick="setSub(this,'Mathématiques','📐')">📐 Maths</button>
+  <button class="subject-btn" onclick="setSub(this,'Français','📝')">📝 Français</button>
+  <button class="subject-btn" onclick="setSub(this,'Histoire-Géo','🌍')">🌍 Hist-Géo</button>
+  <button class="subject-btn" onclick="setSub(this,'Sciences','🔬')">🔬 Sciences</button>
+  <button class="subject-btn" onclick="setSub(this,'Anglais','🇬🇧')">🇬🇧 Anglais</button>
+  <button class="subject-btn" onclick="setSub(this,'Espagnol','🇪🇸')">🇪🇸 Espagnol</button>
+  <button class="subject-btn" onclick="setSub(this,'Physique-Chimie','⚗️')">⚗️ Physique</button>
+  <button class="subject-btn" onclick="setSub(this,'SVT','🌿')">🌿 SVT</button>
+  <button class="subject-btn" onclick="setSub(this,'Technologie','💻')">💻 Techno</button>
+</div>
+
+<div class="main">
+
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-value" id="sQ">0</div>
+      <div class="stat-label">Questions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="sS" style="background:linear-gradient(135deg,#10B981,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">0%</div>
+      <div class="stat-label">Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="sSt" style="background:linear-gradient(135deg,#F59E0B,#EC4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🔥0</div>
+      <div class="stat-label">Série</div>
+    </div>
+  </div>
+
+  <div class="progress-section" id="progSec">
+    <div class="section-label">📊 Progression</div>
+    <div class="prog-wrap"><div class="prog-fill" id="progFill"></div></div>
+  </div>
+
+  <div class="section-label">📸 Importer une leçon ou un exercice</div>
+  <div class="upload-zone" id="upZone" onclick="document.getElementById('fileInput').click()">
+    <div class="upload-icon">🖼️</div>
+    <div class="upload-title">Photo de leçon ou exercice</div>
+    <div class="upload-sub">Capture d'écran, photo de cahier, fiche de révision…</div>
+    <button class="upload-btn" onclick="event.stopPropagation();document.getElementById('fileInput').click()">📂 Choisir une image</button>
+    <div class="previews" id="previews"></div>
+    <button class="clear-btn" id="clearBtn" onclick="event.stopPropagation();clearImgs()">🗑️ Tout supprimer</button>
+  </div>
+  <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(this.files)">
+
+  <div class="section-label">🎯 Mode d'étude</div>
+  <div class="mode-grid">
+    <div class="mode-card sel" onclick="setMode(this,'qcm')"><div class="mode-icon">🧠</div><div class="mode-name">QCM</div><div class="mode-desc">4 choix</div></div>
+    <div class="mode-card" onclick="setMode(this,'vf')"><div class="mode-icon">✅</div><div class="mode-name">Vrai / Faux</div><div class="mode-desc">Test rapide</div></div>
+    <div class="mode-card" onclick="setMode(this,'libre')"><div class="mode-icon">✍️</div><div class="mode-name">Réponse libre</div><div class="mode-desc">Développer</div></div>
+    <div class="mode-card" onclick="setMode(this,'flash')"><div class="mode-icon">⚡</div><div class="mode-name">Flashcards</div><div class="mode-desc">Mémorisation</div></div>
+  </div>
+
+  <div class="chat-section">
+    <div class="chat-header">
+      <div class="bot-av">🤖</div>
+      <div>
+        <div class="bot-name">StudyBot</div>
+        <div class="bot-status" id="botSt">Prêt à t'aider !</div>
+      </div>
+      <div class="stag" id="stag">🌟 Général</div>
+    </div>
+    <div class="chat-msgs" id="msgs"></div>
+    <div class="chat-input-area">
+      <div class="quick-actions">
+        <button class="qbtn" onclick="qa('Génère 5 questions QCM')">🎲 5 QCM</button>
+        <button class="qbtn" onclick="qa('Explique-moi ce concept simplement')">💡 Expliquer</button>
+        <button class="qbtn" onclick="qa('Donne-moi un exercice pratique')">✏️ Exercice</button>
+        <button class="qbtn" onclick="qa('Fais un résumé de la leçon')">📋 Résumé</button>
+        <button class="qbtn" onclick="qa('Génère 10 questions de révision intensive')">🚀 ×10 Révision</button>
+        <button class="qbtn" onclick="qa('Donne des astuces pour retenir facilement')">🧩 Astuces mémo</button>
+      </div>
+      <div class="irow">
+        <textarea class="cinput" id="cinput" placeholder="Pose une question ou demande des exercices…" rows="1"
+          onkeydown="onKey(event)" oninput="resize(this)"></textarea>
+        <button class="sbtn" id="sbtn" onclick="send()">➤</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---- STATE ---- */
+const G = {
+  key:'', name:'',
+  sub:'Général', subEmoji:'🌟',
+  mode:'qcm',
+  imgs:[],        // {url, b64, mime}
+  hist:[],        // [{role:'user'|'model', parts:[{text}|{inlineData}]}]
+  total:0, correct:0, streak:0,
+  busy:false
+};
+
+const SYSPROMPT = `Tu es StudyBot, un assistant éducatif bienveillant et motivant pour une élève de 4ème (13-14 ans) en France.
+Matières : Maths, Français, Histoire-Géo, SVT, Physique-Chimie, Technologie, Anglais (B1), Espagnol (A2/B1).
+Sois encourageant, positif. Donne toujours une explication après chaque réponse.
+
+FORMAT QCM → JSON brut uniquement, sans balises markdown :
+{"type":"qcm","questions":[{"question":"...","options":["A. ...","B. ...","C. ...","D. ..."],"correct":0,"explanation":"..."}]}
+
+FORMAT VRAI/FAUX → JSON brut :
+{"type":"vf","questions":[{"question":"...","correct":true,"explanation":"..."}]}
+
+FORMAT FLASHCARDS → JSON brut :
+{"type":"flash","cards":[{"front":"...","back":"..."}]}
+
+Pour les réponses libres → texte normal structuré avec emojis.
+Si une image est fournie, analyse-la et base tes questions/explications sur son contenu.`;
+
+/* ---- INIT ---- */
+window.onload = () => {
+  const k = localStorage.getItem('sb_key');
+  const n = localStorage.getItem('sb_name');
+  if (k) { G.key = k; G.name = n||''; showApp(); }
+};
+
+function startApp() {
+  const k = document.getElementById('apiKeyInput').value.trim();
+  const n = document.getElementById('nameInput').value.trim();
+  if (!k.startsWith('AIza')) { toast('❌ Clé invalide — commence par AIza…','err'); return; }
+  G.key = k; G.name = n;
+  localStorage.setItem('sb_key', k);
+  localStorage.setItem('sb_name', n);
+  showApp();
+}
+
+function showApp() {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  setupDrop();
+  const n = G.name ? ` <strong>${G.name}</strong>` : '';
+  addBot(`Salut${n} ! 👋 Je suis <strong>StudyBot</strong>, ton assistant pour réviser en 4ème !<br><br>
+📸 <strong>Importe une photo</strong> de ta leçon → je génère des questions personnalisées.<br>
+🎯 <strong>Choisis un mode</strong> : QCM, Vrai/Faux, Flashcards ou Réponse libre.<br>
+💬 Ou pose-moi directement une question sur n'importe quelle matière.<br><br>
+C'est parti ! 🚀`);
+}
+
+function resetApp() {
+  if (!confirm('Changer de clé API ?')) return;
+  localStorage.clear(); location.reload();
+}
+
+/* ---- SUBJECT / MODE ---- */
+function setSub(btn, name, emoji) {
+  document.querySelectorAll('.subject-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  G.sub = name; G.subEmoji = emoji;
+  document.getElementById('stag').textContent = `${emoji} ${name}`;
+}
+function setMode(card, m) {
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('sel'));
+  card.classList.add('sel'); G.mode = m;
+}
+
+/* ---- UPLOAD ---- */
+function setupDrop() {
+  const z = document.getElementById('upZone');
+  z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('drag'); });
+  z.addEventListener('dragleave', () => z.classList.remove('drag'));
+  z.addEventListener('drop', e => { e.preventDefault(); z.classList.remove('drag'); handleFiles(e.dataTransfer.files); });
+}
+function handleFiles(files) {
+  Array.from(files).forEach(f => {
+    if (!f.type.startsWith('image/')) return;
+    const r = new FileReader();
+    r.onload = e => {
+      G.imgs.push({ url: e.target.result, b64: e.target.result.split(',')[1], mime: f.type });
+      renderPreviews();
+      toast('📸 Image ajoutée !','ok');
+    };
+    r.readAsDataURL(f);
+  });
+}
+function renderPreviews() {
+  const c = document.getElementById('previews'); c.innerHTML = '';
+  G.imgs.forEach((img,i) => {
+    const d = document.createElement('div'); d.className = 'prev-item';
+    d.innerHTML = `<img src="${img.url}" alt="img"><button class="prev-rm" onclick="rmImg(${i})">✕</button>`;
+    c.appendChild(d);
+  });
+  document.getElementById('clearBtn').style.display = G.imgs.length ? 'inline-block' : 'none';
+}
+function rmImg(i) { G.imgs.splice(i,1); renderPreviews(); }
+function clearImgs() { G.imgs=[]; renderPreviews(); document.getElementById('fileInput').value=''; }
+
+/* ---- QUICK ACTIONS ---- */
+function qa(t) { document.getElementById('cinput').value = t; send(); }
+
+/* ---- SEND ---- */
+async function send() {
+  const inp = document.getElementById('cinput');
+  const txt = inp.value.trim();
+  if (!txt || G.busy) return;
+  inp.value=''; resize(inp);
+
+  const modeHint = G.mode==='qcm'   ? 'Génère des QCM (JSON brut). ' :
+                   G.mode==='vf'    ? 'Génère des Vrai/Faux (JSON brut). ' :
+                   G.mode==='flash' ? 'Génère des flashcards (JSON brut). ' : '';
+  const subjHint = G.sub!=='Général' ? `Matière : ${G.sub}. ` : '';
+  const nameHint = G.name ? `Prénom de l'élève : ${G.name}. ` : '';
+  const full = nameHint + subjHint + modeHint + txt;
+
+  // Build Gemini parts
+  const parts = [];
+  G.imgs.forEach(img => parts.push({ inlineData:{ mimeType: img.mime, data: img.b64 }}));
+  parts.push({ text: full });
+
+  addUser(txt);
+  G.hist.push({ role:'user', parts });
+
+  await callGemini();
+}
+
+/* ---- GEMINI API ---- */
+async function callGemini() {
+  G.busy = true;
+  document.getElementById('sbtn').disabled = true;
+  document.getElementById('botSt').textContent = 'En train de réfléchir… 🧠';
+  showTyping();
+
+  // Keep last 10 turns
+  const contents = G.hist.slice(-10);
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${G.key}`;
+
+  try {
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system_instruction:{ parts:[{ text: SYSPROMPT }]},
+        contents,
+        generationConfig:{ maxOutputTokens:1500, temperature:0.7 }
+      })
+    });
+    const data = await res.json();
+    removeTyping();
+
+    if (data.error) {
+      const msg = data.error.message || 'Erreur API';
+      addBot(`❌ Erreur : ${msg}`);
+      G.hist.pop();
+      toast('❌ '+msg,'err');
+    } else {
+      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      G.hist.push({ role:'model', parts:[{ text: rawText }]});
+      processResp(rawText);
+    }
+  } catch(e) {
+    removeTyping();
+    addBot('❌ Impossible de contacter l\'API. Vérifie ta clé Gemini et ta connexion.');
+    G.hist.pop();
+    toast('❌ Erreur réseau','err');
+    console.error(e);
+  } finally {
+    G.busy = false;
+    document.getElementById('sbtn').disabled = false;
+    document.getElementById('botSt').textContent = 'Prêt à t\'aider !';
+  }
+}
+
+/* ---- PROCESS ---- */
+function processResp(text) {
+  const clean = text.replace(/```json|```/gi,'').trim();
+  const m = clean.match(/\{[\s\S]*\}/);
+  if (m) {
+    try {
+      const p = JSON.parse(m[0]);
+      if (p.type==='qcm'   && p.questions) { renderQCM(p.questions);  return; }
+      if (p.type==='vf'    && p.questions) { renderVF(p.questions);   return; }
+      if (p.type==='flash' && p.cards)     { renderFlash(p.cards);    return; }
+    } catch(e) {}
+  }
+  addBot(text);
+}
+
+/* ---- QCM ---- */
+function renderQCM(qs) {
+  const L=['A','B','C','D'];
+  qs.forEach((q,qi) => {
+    G.total++;
+    const id=`qcm_${Date.now()}_${qi}`;
+    const d=document.createElement('div'); d.className='qcm-block'; d.id=id;
+    d.innerHTML=`
+      <div class="qqst"><span class="qnum">QUESTION ${qi+1}</span>${esc(q.question)}</div>
+      <div class="qopts">${q.options.map((o,oi)=>`
+        <button class="qopt" onclick="ansQCM('${id}',${oi},${q.correct},'${ss(q.explanation)}')">
+          <span class="oltr">${L[oi]}</span>${esc(o.replace(/^[A-D]\.\s*/,''))}
+        </button>`).join('')}</div>
+      <div class="qfb" id="${id}_fb"></div>`;
+    document.getElementById('msgs').appendChild(d);
+  });
+  updStats(); scrollB(); updProg();
+  toast(`🧠 ${qs.length} question(s) générée(s) !`,'ok');
+}
+function ansQCM(id,ch,cor,expl) {
+  const b=document.getElementById(id);
+  const ops=b.querySelectorAll('.qopt');
+  const fb=document.getElementById(`${id}_fb`);
+  ops.forEach(o=>o.disabled=true);
+  const ok=ch===cor;
+  ops[ch].classList.add(ok?'ok':'ko');
+  if(!ok) ops[cor].classList.add('rev');
+  fb.style.display='block'; fb.className=`qfb ${ok?'ok':'ko'}`;
+  fb.innerHTML=ok?`✅ Bravo ! ${esc(expl)}`:`❌ Bonne réponse : <strong>${['A','B','C','D'][cor]}</strong>. ${esc(expl)}`;
+  if(ok){G.correct++;G.streak++;}else{G.streak=0;}
+  updStats(); updProg();
+}
+
+/* ---- VRAI/FAUX ---- */
+function renderVF(qs) {
+  qs.forEach((q,qi) => {
+    G.total++;
+    const id=`vf_${Date.now()}_${qi}`;
+    const d=document.createElement('div'); d.className='qcm-block'; d.id=id;
+    d.innerHTML=`
+      <div class="qqst"><span class="qnum">VRAI / FAUX ${qi+1}</span>${esc(q.question)}</div>
+      <div class="qopts">
+        <button class="qopt" onclick="ansVF('${id}',true,${q.correct},'${ss(q.explanation)}')"><span class="oltr">✓</span>Vrai</button>
+        <button class="qopt" onclick="ansVF('${id}',false,${q.correct},'${ss(q.explanation)}')"><span class="oltr">✗</span>Faux</button>
+      </div>
+      <div class="qfb" id="${id}_fb"></div>`;
+    document.getElementById('msgs').appendChild(d);
+  });
+  updStats(); scrollB(); updProg();
+}
+function ansVF(id,ch,cor,expl) {
+  const b=document.getElementById(id);
+  const ops=b.querySelectorAll('.qopt');
+  const fb=document.getElementById(`${id}_fb`);
+  ops.forEach(o=>o.disabled=true);
+  const ok=ch===cor;
+  const ci=ch?0:1; const ri=cor?0:1;
+  ops[ci].classList.add(ok?'ok':'ko');
+  if(!ok) ops[ri].classList.add('rev');
+  fb.style.display='block'; fb.className=`qfb ${ok?'ok':'ko'}`;
+  fb.innerHTML=ok?`✅ Correct ! ${esc(expl)}`:`❌ C'était <strong>${cor?'Vrai':'Faux'}</strong>. ${esc(expl)}`;
+  if(ok){G.correct++;G.streak++;}else{G.streak=0;}
+  updStats(); updProg();
+}
+
+/* ---- FLASHCARDS ---- */
+function renderFlash(cards) {
+  addBot(`⚡ <strong>${cards.length} flashcard(s)</strong> prêtes ! Clique sur chaque carte pour la retourner.`);
+  cards.forEach((c,i) => {
+    const d=document.createElement('div'); d.className='fc';
+    let fl=false;
+    d.innerHTML=`<div class="fc-side" id="fcs${i}">RECTO — Question</div><div class="fc-cnt" id="fcc${i}">${esc(c.front)}</div><div class="fc-hint">👆 Clique pour voir la réponse</div>`;
+    d.onclick=()=>{
+      fl=!fl;
+      document.getElementById(`fcs${i}`).textContent=fl?'VERSO — Réponse':'RECTO — Question';
+      document.getElementById(`fcc${i}`).textContent=fl?c.back:c.front;
+      d.classList.toggle('flipped',fl);
+      d.querySelector('.fc-hint').textContent=fl?'🔄 Cliquer pour revenir':'👆 Clique pour voir la réponse';
+    };
+    document.getElementById('msgs').appendChild(d);
+  });
+  scrollB();
+}
+
+/* ---- MESSAGES ---- */
+function addUser(txt) {
+  const w=document.getElementById('msgs');
+  const d=document.createElement('div'); d.className='msg user';
+  let inner=`<div class="mav">👤</div>`;
+  if(G.imgs.length>0){
+    inner+=`<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      ${G.imgs.map(img=>`<img src="${img.url}" class="msg-img" alt="leçon">`).join('')}
+      <div class="mbub">${esc(txt)}</div></div>`;
+  } else {
+    inner+=`<div class="mbub">${esc(txt)}</div>`;
+  }
+  d.innerHTML=inner; w.appendChild(d); scrollB();
+}
+function addBot(html) {
+  const w=document.getElementById('msgs');
+  const d=document.createElement('div'); d.className='msg bot';
+  d.innerHTML=`<div class="mav">🤖</div><div class="mbub">${fmt(html)}</div>`;
+  w.appendChild(d); scrollB();
+}
+function showTyping() {
+  const w=document.getElementById('msgs');
+  const d=document.createElement('div'); d.className='msg bot'; d.id='typing';
+  d.innerHTML=`<div class="mav">🤖</div><div class="typing-ind"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>`;
+  w.appendChild(d); scrollB();
+}
+function removeTyping(){ const e=document.getElementById('typing'); if(e)e.remove(); }
+
+/* ---- STATS ---- */
+function updStats() {
+  document.getElementById('sQ').textContent=G.total;
+  const p=G.total>0?Math.round((G.correct/G.total)*100):0;
+  document.getElementById('sS').textContent=p+'%';
+  document.getElementById('sSt').textContent='🔥'+G.streak;
+}
+function updProg() {
+  if(!G.total)return;
+  document.getElementById('progSec').style.display='block';
+  document.getElementById('progFill').style.width=Math.round((G.correct/G.total)*100)+'%';
+}
+
+/* ---- UTILS ---- */
+function scrollB(){ const m=document.getElementById('msgs'); setTimeout(()=>m.scrollTop=m.scrollHeight,80); }
+function onKey(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} }
+function resize(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast ${type} show`;
+  setTimeout(()=>t.className='toast',2800);
+}
+function esc(t=''){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function ss(t=''){ return String(t).replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\n/g,' '); }
+function fmt(t=''){ return esc(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\n/g,'<br>'); }
+</script>
+</body>
+</html>
